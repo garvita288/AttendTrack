@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Student Attendance & Analytics System</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f3f4f6;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--text);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        input,
+        select,
+        textarea,
+        button {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 0;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            padding: 12px;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button.secondary {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        button.secondary:hover {
+            background: #e0e7ff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .flex {
+            display: flex;
+            gap: 12px;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            background: var(--card);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-controls button {
+            width: auto;
+            padding: 8px 16px;
+        }
+
+        .lang-select {
+            width: auto;
+            padding: 8px 32px 8px 12px;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left-color: var(--warning);
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left-color: var(--success);
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left-color: var(--danger);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-faculty {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .badge-student {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, #312e81 100%);
+            color: white;
+            padding: 40px 24px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-banner h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .hero-banner p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .timetable {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slot {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .slot-time {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .slot-name {
+            color: var(--text-light);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app"></div>
+
+    <script>
+        // Init Mock Data / State
+        let state = {
+            currentUser: null,
+            users: JSON.parse(localStorage.getItem('users')) || [
+                { username: 'coord', password: '123', role: 'faculty', isCoord: true },
+                { username: 'fac1', password: '123', role: 'faculty', isCoord: false },
+                { username: 'stu1', password: '123', role: 'student', isCoord: false }
+            ],
+            classes: JSON.parse(localStorage.getItem('classes')) || [],
+            classrooms: JSON.parse(localStorage.getItem('classrooms')) || [],
+            attendance: JSON.parse(localStorage.getItem('attendance')) || [],
+            lang: 'en',
+            authMode: 'login',
+            signupRole: 'student',
+            kioskMode: false,
+            faceRegistered: false,
+            mediaStream: null
+        };
+
+        const i18n = {
+            en: {
+                title: "🎓 AttendTrack", sub: "Automated Attendance & Analytics",
+                login: "Login", signup: "Sign Up", email: "Enrollment / ID", pass: "Password",
+                role: "Role", fac: "Faculty", stu: "Student", dash: "Dashboard", logout: "Logout",
+                markAtt: "Mark Attendance", class: "Subject / Class", roll: "Enter Enrollments", submit: "Submit Record",
+                lang: "Language", notif: "Notifications", coord: "Coordinator Tools",
+                lec: "Lecture", str: "Strength", pres: "Present", abs: "Absent",
+                bunk: "Bunking Alert", bunkDesc: "Students who attended previous lectures today but missed this one:"
+            },
+            es: {
+                title: "🎓 AttendTrack", sub: "Asistencia Automatizada y Analítica",
+                login: "Acceso", signup: "Inscribirse", email: "Matrícula / ID", pass: "Contraseña",
+                role: "Rol", fac: "Facultad", stu: "Estudiante", dash: "Tablero", logout: "Cerrar sesión",
+                markAtt: "Marcar Asistencia", class: "Materia / Clase", roll: "Ingresar Matrículas", submit: "Enviar Registro",
+                lang: "Idioma", notif: "Notificaciones", coord: "Herramientas de Coordinador",
+                lec: "Conferencia", str: "Fuerza", pres: "Presente", abs: "Ausente",
+                bunk: "Alerta de Fuga", bunkDesc: "Estudiantes que asistieron a conferencias anteriores hoy pero faltaron a esta:"
+            },
+            hi: {
+                title: "🎓 अटेंडट्रैक", sub: "स्वचालित उपस्थिति और एनालिटिक्स",
+                login: "लॉग इन", signup: "साइन अप", email: "नामांकन / आईडी", pass: "पासवर्ड",
+                role: "भूमिका", fac: "संकाय", stu: "छात्र", dash: "डैशबोर्ड", logout: "लॉग आउट",
+                markAtt: "उपस्थिति दर्ज करें", class: "विषय / कक्षा", roll: "नामांकन दर्ज करें", submit: "रिकॉर्ड सबमिट करें",
+                lang: "भाषा", notif: "सूचनाएं", coord: "समन्वयक उपकरण",
+                lec: "व्याख्यान", str: "कुल क्षमता", pres: "उपस्थित", abs: "अनुपस्थित",
+                bunk: "बंकिंग अलर्ट", bunkDesc: "जिन छात्रों ने आज पिछले व्याख्यान में भाग लिया लेकिन इसमें नहीं आए:"
+            }
+        };
+
+        function t(key) { return i18n[state.lang][key] || key; }
+
+        function save() {
+            localStorage.setItem('users', JSON.stringify(state.users));
+            localStorage.setItem('classes', JSON.stringify(state.classes));
+            localStorage.setItem('classrooms', JSON.stringify(state.classrooms));
+            localStorage.setItem('attendance', JSON.stringify(state.attendance));
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            if (state.kioskMode) app.innerHTML = renderKiosk();
+            else if (!state.currentUser) app.innerHTML = renderAuth();
+            else if (state.currentUser.role === 'faculty') app.innerHTML = renderFaculty();
+            else app.innerHTML = renderStudent();
+        }
+        
+        function switchLang(l) { state.lang = l; render(); }
+
+        const LECTURE_SLOTS = [
+            { lec: 1, allowedStart: '08:00', allowedEnd: '08:45', classStart: '08:30', classEnd: '09:10' },
+            { lec: 2, allowedStart: '09:10', allowedEnd: '09:20', classStart: '09:10', classEnd: '10:00' },
+            { lec: 3, allowedStart: '10:00', allowedEnd: '10:10', classStart: '10:00', classEnd: '10:40' },
+            { lec: 4, allowedStart: '11:00', allowedEnd: '11:30', classStart: '11:20', classEnd: '12:10' },
+            { lec: 5, allowedStart: '12:10', allowedEnd: '12:20', classStart: '12:10', classEnd: '13:00' },
+            { lec: 6, allowedStart: '13:00', allowedEnd: '13:10', classStart: '13:00', classEnd: '13:50' },
+            { lec: 7, allowedStart: '13:50', allowedEnd: '14:00', classStart: '13:50', classEnd: '14:40' }
+        ];
+
+        function timeToMinutes(timeStr) {
+            const parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        async function startCamera(videoId) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                state.mediaStream = stream;
+                document.getElementById(videoId).srcObject = stream;
+                return true;
+            } catch (err) {
+                alert("Camera access denied or unavailable.");
+                return false;
+            }
+        }
+
+        async function startSignupCamera() {
+            const success = await startCamera('webcam-video');
+            if (success) {
+                document.getElementById('webcam-container').style.display = 'flex';
+                document.getElementById('btn-start-camera').classList.add('hidden');
+                document.getElementById('btn-capture-face').classList.remove('hidden');
+            }
+        }
+
+        function captureFace() {
+            state.faceRegistered = true;
+            if (state.mediaStream) {
+                state.mediaStream.getTracks().forEach(t => t.stop());
+                state.mediaStream = null;
+            }
+            document.getElementById('webcam-container').style.display = 'none';
+            document.getElementById('btn-capture-face').classList.add('hidden');
+            document.getElementById('face-status').style.display = 'block';
+        }
+
+        function startKiosk() {
+            state.kioskMode = true;
+            render();
+            setTimeout(() => startCamera('kiosk-video'), 100);
+        }
+
+        function exitKiosk() {
+            if (state.mediaStream) {
+                state.mediaStream.getTracks().forEach(t => t.stop());
+                state.mediaStream = null;
+            }
+            state.kioskMode = false;
+            render();
+        }
+
+        function simulateFaceMatch() {
+            const stuData = document.getElementById('simulatedStudent').value;
+            if(!stuData) return alert("Select a student to simulate");
+            
+            const mockTimeInput = document.getElementById('mockTime').value;
+            let now = new Date();
+            let currentMins = now.getHours() * 60 + now.getMinutes();
+            if (mockTimeInput) {
+                currentMins = timeToMinutes(mockTimeInput);
+            }
+
+            let activeLec = null;
+            let status = 'none';
+
+            for (let slot of LECTURE_SLOTS) {
+                let startAllow = timeToMinutes(slot.allowedStart);
+                let endAllow = timeToMinutes(slot.allowedEnd);
+                let endClass = timeToMinutes(slot.classEnd);
+                
+                if (currentMins >= startAllow && currentMins < endClass) {
+                    activeLec = slot;
+                    if (currentMins <= endAllow) {
+                        status = 'allowed';
+                    } else {
+                        status = 'exceeded';
+                    }
+                    break;
+                }
+            }
+
+            const alertBox = document.getElementById('kiosk-alert');
+            
+            if (!activeLec) {
+                alertBox.innerHTML = `<div class="alert alert-warning">🕒 No active lecture at this time.</div>`;
+                return;
+            }
+            
+            const dateStr = now.toLocaleDateString();
+
+            if (status === 'allowed') {
+                alertBox.innerHTML = `<div class="alert alert-success">✅ ${stuData} Present for Lecture ${activeLec.lec}.</div>`;
+                
+                state.attendance.push({
+                    id: Date.now() + Math.random(),
+                    subj: "Auto-Kiosk Logging",
+                    lec: activeLec.lec,
+                    students: [stuData],
+                    count: 1,
+                    date: dateStr
+                });
+                save();
+            } else if (status === 'exceeded') {
+                alertBox.innerHTML = `<div class="alert alert-danger" style="display:flex; flex-direction:column;">
+                    <strong style="margin-bottom:8px;">⚠️ Time Limit Exceeded</strong>
+                    Disclaimer: You arrived after the allowed window (${activeLec.allowedStart} - ${activeLec.allowedEnd}). You are marked ABSENT for Lecture ${activeLec.lec}.
+                </div>`;
+            }
+        }
+
+        function renderKiosk() {
+            return `
+            <div class="hero-banner" style="margin: 0; border-radius: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="position: absolute; top: 20px; right: 20px;">
+                    <button class="secondary" onclick="exitKiosk()">❌ Exit Kiosk</button>
+                </div>
+                <h2>📷 Automated Face Attendance Kiosk</h2>
+                
+                <div style="width: 500px; height: 300px; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+                    <video id="kiosk-video" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                </div>
+                
+                <div class="card" style="width: 500px; color: var(--text);">
+                    <h3>Simulate Recognition</h3>
+                    <p style="font-size:0.8rem; margin-top:8px;">(Mock Time: <input type="time" id="mockTime"> leave empty for system time)</p>
+                    <select id="simulatedStudent" style="margin-top: 12px;">
+                        <option value="">-- Detect Student Face --</option>
+                        ${state.users.filter(u => u.role === 'student').map(u => `<option value="${u.username}">${u.name} (${u.username})</option>`).join('')}
+                    </select>
+                    <button onclick="simulateFaceMatch()" style="margin-top: 16px;">🔍 Simulate Camera Match</button>
+                    
+                    <div id="kiosk-alert" style="margin-top: 16px;"></div>
+                </div>
+            </div>`;
+        }
+
+        function navBar() {
+            return `<div class="nav">
+                <div class="nav-brand">${t('title')}</div>
+                <div class="nav-controls">
+                    <select class="lang-select" onchange="switchLang(this.value)">
+                        <option value="en" ${state.lang === 'en' ? 'selected' : ''}>🇬🇧 English</option>
+                        <option value="es" ${state.lang === 'es' ? 'selected' : ''}>🇪🇸 Español</option>
+                        <option value="hi" ${state.lang === 'hi' ? 'selected' : ''}>🇮🇳 हिंदी</option>
+                    </select>
+                    ${state.currentUser ? `
+                        <span class="badge badge-${state.currentUser.role}">${state.currentUser.role}</span>
+                        <button class="secondary" onclick="logout()">${t('logout')}</button>
+                    ` : ''}
+                </div>
+            </div>`;
+        }
+
+        function renderAuth() {
+            if (state.authMode === 'signup_role') return renderSignupRole();
+            if (state.authMode === 'signup_form') return renderSignupForm();
+
+            return `
+            ${navBar()}
+            <div class="hero-banner">
+                <h1>${t('title')}</h1>
+                <p>${t('sub')} - Efficient, Real-time, and Smart.</p>
+            </div>
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <h2 style="text-align: center; margin-bottom: 24px;">${t('login')}</h2>
+                <div class="form-group">
+                    <label>${t('email')} / College Mail ID</label>
+                    <input type="text" id="username" placeholder="Enter Mail ID or User ID">
+                </div>
+                <div class="form-group">
+                    <label>${t('pass')}</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <div class="flex-col" style="margin-top: 24px;">
+                    <button onclick="login()">${t('login')}</button>
+                    <button class="secondary" onclick="goToSignupRole()">Create Account</button>
+                    <a href="#" style="text-align:center; color: var(--text-light); font-size:0.9rem; text-decoration:none;" onclick="alert('Password reset link sent to registered email.');">Forgot Password?</a>
+                </div>
+            </div>`;
+        }
+
+        function goToSignupRole() {
+            state.authMode = 'signup_role';
+            render();
+        }
+
+        function renderSignupRole() {
+            return `
+            ${navBar()}
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <h2 style="text-align: center; margin-bottom: 24px;">Sign Up</h2>
+                <div class="form-group">
+                    <label>Are you a Student or Faculty?</label>
+                    <select id="signupRoleSelect">
+                        <option value="student">Student</option>
+                        <option value="faculty">Faculty</option>
+                    </select>
+                </div>
+                <div class="flex-col" style="margin-top: 24px;">
+                    <button onclick="goToSignupForm()">Continue</button>
+                    <button class="secondary" onclick="goToLogin()">Back to Login</button>
+                </div>
+            </div>`;
+        }
+
+        function goToSignupForm() {
+            state.signupRole = document.getElementById('signupRoleSelect').value;
+            state.authMode = 'signup_form';
+            render();
+        }
+
+        function goToLogin() {
+            state.authMode = 'login';
+            render();
+        }
+
+        function renderSignupForm() {
+            const isStudent = state.signupRole === 'student';
+            return `
+            ${navBar()}
+            <div class="card" style="max-width: 500px; margin: 0 auto;">
+                <h2 style="text-align: center; margin-bottom: 24px;">Create ${isStudent ? 'Student' : 'Faculty'} Account</h2>
+                
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your full name">
+                </div>
+                
+                ${isStudent ? `
+                <div class="form-group">
+                    <label>Class</label>
+                    <input type="text" id="signupClass" placeholder="e.g. B.Tech 3rd Year">
+                </div>
+                
+                <div class="form-group">
+                    <label>Section</label>
+                    <input type="text" id="signupSection" placeholder="e.g. A">
+                </div>
+                
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" id="signupDept" placeholder="e.g. Computer Science">
+                </div>` : ''}
+                
+                <div class="form-group">
+                    <label>Acropolis Mail ID</label>
+                    <input type="email" id="signupEmail" placeholder="e.g. user@acropolis.in">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="signupPhone" placeholder="Enter 10-digit phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px;">Must include at least 1 uppercase, 1 lowercase, 1 numeric, 1 special character.</p>
+                    <input type="password" id="signupPassword" placeholder="Strong Password">
+                </div>
+                
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Face Registration</label>
+                    <div id="webcam-container" style="background: #000; height: 150px; border-radius: 8px; margin-bottom: 8px; display: none; align-items: center; justify-content: center; overflow: hidden;">
+                        <video id="webcam-video" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                    </div>
+                    <button class="secondary" id="btn-start-camera" type="button" onclick="startSignupCamera()">📷 Open Camera to Register Face</button>
+                    <button class="secondary hidden" id="btn-capture-face" type="button" onclick="captureFace()" style="background: var(--success); color: white; border-color: var(--success);">📸 Capture & Register</button>
+                    <p id="face-status" style="font-size: 0.85rem; color: var(--success); font-weight: 500; display: none; margin-top: 8px;">✅ Face Registered Successfully!</p>
+                </div>
+                
+                <div class="flex-col" style="margin-top: 24px;">
+                    <button onclick="processSignup()">Create Account</button>
+                    <button class="secondary" onclick="goToSignupRole()">Back</button>
+                </div>
+            </div>`;
+        }
+
+        function login() {
+            const u = document.getElementById('username')?.value.trim();
+            const p = document.getElementById('password')?.value;
+            if (!u || !p) return alert("Enter credentials.");
+
+            let user = state.users.find(x => x.username === u && x.password === p);
+            if (user) {
+                state.currentUser = user;
+                render();
+            } else {
+                alert("Invalid user credentials. Please check or sign up.");
+            }
+        }
+
+        function processSignup() {
+            if (!state.faceRegistered) {
+                return alert("Please register your face data first.");
+            }
+            const isStudent = state.signupRole === 'student';
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const pass = document.getElementById('signupPassword').value;
+
+            if (!email.toLowerCase().endsWith('@acropolis.in')) {
+                return alert("You must use a valid @acropolis.in email address.");
+            }
+
+            let cls = '', sec = '', dept = '';
+            
+            if (isStudent) {
+                cls = document.getElementById('signupClass').value.trim();
+                sec = document.getElementById('signupSection').value.trim();
+                dept = document.getElementById('signupDept').value.trim();
+                if (!name || !cls || !sec || !dept || !email || !phone || !pass) {
+                    return alert("Please fill all fields.");
+                }
+            } else {
+                if (!name || !email || !phone || !pass) {
+                    return alert("Please fill all fields.");
+                }
+            }
+
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(phone)) {
+                return alert("Phone number must be exactly 10 digits. Please enter again.");
+            }
+
+            const passUpper = /[A-Z]/;
+            const passLower = /[a-z]/;
+            const passNum = /[0-9]/;
+            const passSpecial = /[^A-Za-z0-9]/;
+
+            if (!passUpper.test(pass) || !passLower.test(pass) || !passNum.test(pass) || !passSpecial.test(pass)) {
+                return alert("Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 numeric, and 1 special character.");
+            }
+
+            if (state.users.find(x => x.username === email)) {
+                return alert("User with this email already exists!");
+            }
+
+            const newUser = {
+                username: email,
+                password: pass,
+                role: state.signupRole,
+                isCoord: false,
+                name,
+                class: cls,
+                section: sec,
+                department: dept,
+                phone
+            };
+
+            state.users.push(newUser);
+            save();
+            state.currentUser = newUser;
+            state.authMode = 'login';
+            state.faceRegistered = false;
+            render();
+        }
+
+        function logout() { state.currentUser = null; render(); }
+
+        function renderFaculty() {
+            let html = navBar();
+
+            // Stats
+            const today = new Date().toLocaleDateString();
+            const todayClasses = state.attendance.filter(a => a.date === today);
+            const totalStudentsMarked = todayClasses.reduce((acc, curr) => acc + curr.count, 0);
+
+            html += `<h2 style="margin-bottom: 24px;">👋 Welcome, ${state.currentUser.username} (Faculty)</h2>
+            <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-value">${todayClasses.length}</div>
+                    <div class="stat-label">Classes Held Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalStudentsMarked}</div>
+                    <div class="stat-label">Total Attendances Marked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Lectures per Day</div>
+                </div>
+            </div>
+            
+            <div class="grid" style="grid-template-columns: 1fr; margin-bottom: 24px;">
+                <div class="hero-banner" style="margin-bottom: 0px; text-align: left; display: flex; justify-content: space-between; align-items: center; padding: 24px;">
+                    <div>
+                        <h2 style="color: white; margin-bottom: 8px;">📷 Automated Face Attendance</h2>
+                        <p style="opacity: 0.9; margin: 0;">Start the Kiosk mode to auto-mark present/absent based on lecture time bounds.</p>
+                    </div>
+                    <button onclick="startKiosk()" style="width: auto; background: white; color: var(--primary);">Start Kiosk</button>
+                </div>
+            </div>
+
+            <div class="grid">
+                <!-- Mark Attendance -->
+                <div class="card">
+                    <h3>✅ ${t('markAtt')} (Manual)</h3>
+                    <div class="form-group">
+                        <label>${t('class')}</label>
+                        <input type="text" id="subject" placeholder="e.g. Data Structures">
+                    </div>
+                    <div class="form-group">
+                        <label>${t('lec')} No.</label>
+                        <select id="lectureNo">
+                            <option value="1">Lec 1 (09:00 AM)</option>
+                            <option value="2">Lec 2 (10:00 AM)</option>
+                            <option value="3">Lec 3 (11:00 AM)</option>
+                            <option value="4">Lec 4 (12:00 PM)</option>
+                            <option value="5">Lec 5 (01:30 PM)</option>
+                            <option value="6">Lec 6 (02:30 PM)</option>
+                            <option value="7">Lec 7 / Lab (03:30 PM)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>${t('roll')} (Comma separated or new lines)</label>
+                        <textarea id="enrollments" placeholder="101, 102, 103..." rows="4"></textarea>
+                    </div>
+                    <button onclick="markAttendance()">${t('submit')}</button>
+                </div>
+                
+                <!-- Timetable and Analytics -->
+                <div class="flex-col">
+                    <div class="card">
+                        <h3>📅 Daily Timetable</h3>
+                        <div class="timetable">
+                            <div class="slot"><span class="slot-time">09:00 AM</span><span class="slot-name">Lecture 1</span></div>
+                            <div class="slot"><span class="slot-time">10:00 AM</span><span class="slot-name">Lecture 2</span></div>
+                            <div class="slot"><span class="slot-time">11:00 AM</span><span class="slot-name">Lecture 3 (Lab Group A)</span></div>
+                        </div>
+                    </div>
+                    
+                    ${renderClassroomsFaculty()}
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📊 Recent Attendance Logs</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <tr>
+                            <th>Date</th>
+                            <th>${t('class')}</th>
+                            <th>${t('lec')}</th>
+                            <th>${t('pres')}</th>
+                            <th>Strength %</th>
+                        </tr>
+                        ${state.attendance.slice().reverse().map(a => `
+                            <tr>
+                                <td>${a.date}</td>
+                                <td><b>${a.subj}</b></td>
+                                <td>Lec ${a.lec}</td>
+                                <td><span class="badge badge-student">${a.count}</span></td>
+                                <td>${Math.round((a.count / 60) * 100)}% (Assumed 60 total)</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    ${state.attendance.length === 0 ? '<p style="text-align:center; padding: 20px; color: var(--text-light);">No records found.</p>' : ''}
+                </div>
+            </div>`;
+            return html;
+        }
+
+        function renderClassroomsFaculty() {
+            const myClasses = state.classrooms.filter(c => c.faculties.includes(state.currentUser.username));
+            return `
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3>📚 My Classrooms</h3>
+                
+                <div class="form-group" style="background:#f9fafb; padding:16px; border-radius:8px; border:1px solid var(--border);">
+                    <label>Create New Classroom</label>
+                    <input type="text" id="newClassName" placeholder="e.g. B.Tech CS 3rd Year">
+                    <button onclick="createClassroom()" class="secondary" style="margin-top:8px;">+ Create Join Link</button>
+                    
+                    <hr style="border:none; border-top:1px solid #e5e7eb; margin: 12px 0;">
+                    
+                    <label>Join Existing Classroom (Co-Faculty)</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="facultyJoinCode" placeholder="Enter Join Code (ACRO-XXXX)">
+                        <button onclick="joinClassroomFaculty()" style="width:auto; padding:0 16px;" class="secondary">Join</button>
+                    </div>
+                </div>
+                
+                <hr style="border:none; border-top:1px solid var(--border); margin: 16px 0;">
+                
+                <h4>Active Classrooms</h4>
+                ${myClasses.length === 0 ? `<p style="color:var(--text-light);font-size:0.9rem;">You haven't created any classrooms yet.</p>` : myClasses.map(c => `
+                    <div style="border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px;">
+                        <h4 style="margin-bottom:8px;">${c.name}</h4>
+                        <div class="flex" style="align-items:center; margin-bottom:12px;">
+                            <span class="badge" style="background:#e0e7ff; color:#3730a3; font-size:1rem; padding:6px 12px; font-family:monospace;">Join Code: ${c.joinCode}</span>
+                            <span style="font-size:0.85rem; color:var(--text-light);">${c.students.length} Students Joined</span>
+                        </div>
+                        
+                        <div class="flex">
+                            <button onclick="promptTimetable('${c.id}')" class="secondary" style="padding: 6px 12px; font-size:0.85rem;">📅 Set Timetable</button>
+                            <button onclick="promptPublishMarks('${c.id}')" class="secondary" style="padding: 6px 12px; font-size:0.85rem;">📝 Upload Marks</button>
+                        </div>
+                    </div>`).join('')}
+            </div>`;
+        }
+
+        function createClassroom() {
+            const name = document.getElementById('newClassName').value.trim();
+            if (!name) return alert("Please enter a classroom name.");
+            
+            const joinCode = 'ACRO-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+            
+            const newClass = {
+                id: 'CLS-' + Date.now(),
+                name: name,
+                joinCode: joinCode,
+                faculties: [state.currentUser.username],
+                students: [],
+                timetable: "No timetable published yet.",
+                marks: {} // { studentId: { mst: 0, test: 0, assignment: 0 } }
+            };
+            
+            state.classrooms.push(newClass);
+            save();
+            render();
+            alert("Classroom created! Share the join code: " + joinCode);
+        }
+
+        function promptTimetable(clsId) {
+            const cls = state.classrooms.find(c => c.id === clsId);
+            const input = prompt("Enter Timetable Summary for " + cls.name + ":\n(e.g., Mon: OS(10AM), Tue: CN(11AM))", cls.timetable);
+            if (input !== null) {
+                cls.timetable = input;
+                save();
+                alert("Timetable updated!");
+                render();
+            }
+        }
+
+        function promptPublishMarks(clsId) {
+            const cls = state.classrooms.find(c => c.id === clsId);
+            if(cls.students.length === 0) return alert("No students have joined this class yet!");
+            
+            const stuEmail = prompt("Enter Student's Acropolis Email to upload marks:\nJoined students: " + cls.students.join(', '));
+            if(!stuEmail || !cls.students.includes(stuEmail)) return alert("Student not found in this class.");
+            
+            const mst = prompt("Enter MST Marks (out of 20):", cls.marks[stuEmail]?.mst || 0);
+            const test = prompt("Enter Test Marks (out of 20):", cls.marks[stuEmail]?.test || 0);
+            const assignment = prompt("Enter Assignment Marks (out of 10):", cls.marks[stuEmail]?.assignment || 0);
+            
+            if(mst !== null && test !== null && assignment !== null) {
+                cls.marks[stuEmail] = { mst: Number(mst), test: Number(test), assignment: Number(assignment) };
+                save();
+                alert("Marks published for " + stuEmail);
+            }
+        }
+
+        function getBunkers() {
+            const today = new Date().toLocaleDateString();
+            const todayClasses = state.attendance.filter(a => a.date === today).sort((a, b) => a.lec - b.lec);
+
+            if (todayClasses.length < 2) return [];
+
+            let issues = new Set();
+            for (let i = 0; i < todayClasses.length - 1; i++) {
+                let currentAttended = todayClasses[i].students;
+                let nextLectures = todayClasses.slice(i + 1);
+
+                currentAttended.forEach(student => {
+                    // Check if student missed ANY subsequent lecture today
+                    nextLectures.forEach(nextLec => {
+                        if (!nextLec.students.includes(student)) {
+                            issues.add(`${student} (missed Lec ${nextLec.lec})`);
+                        }
+                    });
+                });
+            }
+            return Array.from(issues);
+        }
+
+        function renderStudent() {
+            const myEnr = state.currentUser.username;
+
+            // Calculate stats
+            const myRecords = state.attendance.filter(a => a.students.includes(myEnr));
+            const myClasses = state.classrooms.filter(c => c.students.includes(myEnr));
+
+            // To calculate percentage, we assume total lectures in the system = total classes faculty marked.
+            // If faculty marked 10 classes, and student is in 8, it's 80%.
+            const totalClassesConducted = state.attendance.length;
+            const myPercent = totalClassesConducted === 0 ? 100 : Math.round((myRecords.length / totalClassesConducted) * 100);
+
+            let html = navBar();
+
+            html += `
+            <div class="grid" style="grid-template-columns: 1fr 2fr;">
+                <div class="flex-col">
+                    <div class="card" style="text-align: center;">
+                        <div style="width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 16px;">
+                            ${myEnr.substring(0, 2).toUpperCase()}
+                        </div>
+                        <h2>${myEnr}</h2>
+                        <span class="badge badge-student">Student Portal</span>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Summary</h3>
+                        <div class="stat-value" style="font-size: 3.5rem; color: ${myPercent >= 70 ? 'var(--success)' : (myPercent < 30 ? 'var(--danger)' : 'var(--warning)')}">${myPercent}%</div>
+                        <p class="stat-label">Overall Attendance</p>
+                        <p style="margin-top: 12px; color: var(--text-light); font-size: 0.9rem;">
+                            Attended: ${myRecords.length} / ${totalClassesConducted} Lectures
+                        </p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📚 Academics & Classrooms</h3>
+                        <div class="form-group" style="display:flex; gap:8px;">
+                            <input type="text" id="joinCodeInput" placeholder="Join Code (e.g. ACRO-XXXX)">
+                            <button onclick="joinClassroom()" style="width:auto; padding:0 16px;">Join</button>
+                        </div>
+                        
+                        <div style="margin-top:16px;">
+                            ${myClasses.length === 0 ? '<p style="color:var(--text-light);font-size:0.9rem;">You are not enrolled in any classes.</p>' : myClasses.map(c => {
+                                const m = c.marks[myEnr] || { mst: '-', test: '-', assignment: '-' };
+                                return `
+                                <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:12px; background:#f9fafb;">
+                                    <h4 style="color:var(--primary); margin-bottom:8px;">${c.name}</h4>
+                                    <div style="font-size:0.85rem; color:var(--text); margin-bottom:8px;">
+                                        <strong>📅 Timetable:</strong><br>
+                                        ${c.timetable}
+                                    </div>
+                                    <div style="background:white; padding:8px; border-radius:6px; border:1px solid #e5e7eb;">
+                                        <strong>📝 Marks Dashboard</strong>
+                                        <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.85rem;">
+                                            <span>MST: <b>${m.mst}/20</b></span>
+                                            <span>Test: <b>${m.test}/20</b></span>
+                                            <span>Assign: <b>${m.assignment}/10</b></span>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex-col">
+                    <div class="card">
+                        <h3>🔔 ${t('notif')} & Compliance</h3>
+                        <div id="compliance-alert">`;
+
+            if (totalClassesConducted === 0) {
+                html += `<div class="alert alert-success">No classes have been conducted yet.</div>`;
+            } else if (myPercent < 30) {
+                html += `
+                    <div class="alert alert-danger" style="align-items: flex-start;">
+                        <span style="font-size: 1.5rem;">⚠️</span>
+                        <div>
+                            <strong>CRITICAL WARNING (Email Sent)</strong><br>
+                            Your attendance is running below 30% (${myPercent}%). You must improve it to at least 70% to obtain compliance signature and be eligible to sit in the exams.
+                        </div>
+                    </div>`;
+            } else if (myPercent < 70) {
+                html += `
+                    <div class="alert alert-warning" style="align-items: flex-start;">
+                        <span style="font-size: 1.5rem;">⚠️</span>
+                        <div>
+                            <strong>Attention Required</strong><br>
+                            Your attendance is at ${myPercent}%. You need 70% for exam compliance.
+                        </div>
+                    </div>`;
+            } else {
+                html += `
+                    <div class="alert alert-success" style="align-items: flex-start;">
+                        <span style="font-size: 1.5rem;">✅</span>
+                        <div>
+                            <strong>COMPLIANCE APPROVED</strong><br>
+                            Your attendance is ${myPercent}%. You have received the compliance signature from faculty and are allowed to sit in the exam.
+                        </div>
+                    </div>`;
+            }
+
+            html += `       </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>📋 My Attendance Record</h3>
+                        <div style="overflow-x: auto; max-height: 400px;">
+                            <table>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>${t('class')}</th>
+                                    <th>Lec</th>
+                                    <th>Status</th>
+                                </tr>
+                                ${myRecords.slice().reverse().map(a => `
+                                    <tr>
+                                        <td>${a.date}</td>
+                                        <td><b>${a.subj}</b></td>
+                                        <td>${a.lec}</td>
+                                        <td><span class="badge badge-student">Present</span></td>
+                                    </tr>
+                                `).join('')}
+                                ${myRecords.length === 0 ? '<tr><td colspan="4" style="text-align:center;">No attendance records found for you.</td></tr>' : ''}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+            return html;
+        }
+
+        function joinClassroom() {
+            const code = document.getElementById('joinCodeInput').value.trim();
+            if (!code) return alert("Enter a join code.");
+            
+            const cls = state.classrooms.find(c => c.joinCode === code);
+            if (!cls) return alert("Invalid join code.");
+            
+            if (cls.students.includes(state.currentUser.username)) {
+                return alert("You are already in this classroom.");
+            }
+            
+            cls.students.push(state.currentUser.username);
+            save();
+            render();
+            alert("Successfully joined " + cls.name + "!");
+        }
+
+        function joinClassroomFaculty() {
+            const code = document.getElementById('facultyJoinCode').value.trim();
+            if (!code) return alert("Enter a join code.");
+            
+            const cls = state.classrooms.find(c => c.joinCode === code);
+            if (!cls) return alert("Invalid join code.");
+            
+            if (cls.faculties.includes(state.currentUser.username)) {
+                return alert("You are already a faculty in this classroom.");
+            }
+            
+            cls.faculties.push(state.currentUser.username);
+            save();
+            render();
+            alert("Successfully joined " + cls.name + " as co-faculty!");
+        }
+
+        // Initialize view
+        render();
+    </script>
+</body>
+
+</html>
