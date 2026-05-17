@@ -1,0 +1,2 @@
+# AttendTrack
+Automated attendance system
